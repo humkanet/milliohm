@@ -36,7 +36,7 @@ void button_init(BUTTON *btn)
 
 void button_tick(BUTTON *btn, uint16_t ms)
 {
-	// Ñ÷èòûâàåì çíà÷åíèå ïèíà
+	// Ð¡Ñ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð¿Ð¸Ð½Ð°
 	uint8_t pin;
 	switch (btn->port){
 #ifdef TRISA
@@ -57,13 +57,13 @@ void button_tick(BUTTON *btn, uint16_t ms)
 	}
 	//
 	if (btn->stage==BUTTON_STAGE_IDLE){
-		// Êíîïêà íàæàòà, ïðîâåðÿåì äðåáåçã
+		// ÐšÐ½Ð¾Ð¿ÐºÐ° Ð½Ð°Ð¶Ð°Ñ‚Ð°, Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð´Ñ€ÐµÐ±ÐµÐ·Ð³
 		if (!pin){
 			btn->ms    = ms;
 			btn->stage = BUTTON_STAGE_NOISE;
 		}
 	}
-	// Ïðîâåðÿåì äðåáåçã
+	// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð´Ñ€ÐµÐ±ÐµÐ·Ð³
 	else if (btn->stage==BUTTON_STAGE_NOISE){
 		if (U16(ms-btn->ms)<30) return;
 		if (!pin){
@@ -72,9 +72,9 @@ void button_tick(BUTTON *btn, uint16_t ms)
 		}
 		else btn->stage = BUTTON_STAGE_IDLE;
 	}
-	// Æäåì êîãäà êíîïêó îòïóñòÿò
+	// Ð–Ð´ÐµÐ¼ ÐºÐ¾Ð³Ð´Ð° ÐºÐ½Ð¾Ð¿ÐºÑƒ Ð¾Ñ‚Ð¿ÑƒÑÑ‚ÑÑ‚
 	else if (btn->stage==BUTTON_STAGE_DOWN){
-		// Êíîïêà îòïóùåíà
+		// ÐšÐ½Ð¾Ð¿ÐºÐ° Ð¾Ñ‚Ð¿ÑƒÑ‰ÐµÐ½Ð°
 		if (pin){
 			if (btn->event) btn->event(btn, BUTTON_EVENT_UP);
 			btn->stage = BUTTON_STAGE_IDLE;

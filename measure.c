@@ -34,39 +34,38 @@ bool measure_get(uint16_t dac, MEASURE *out)
 	uint32_t vamp_sum;
 	uint32_t vsrc_sum;
 	uint8_t  vamp_err;
-	// Выставляем значение ЦАП
+	// Р’С‹СЃС‚Р°РІР»СЏРµРј Р·РЅР°С‡РµРЅРёРµ Р¦РђРџ
 	dac_set(dac);
-	// Проверяем показания усилителя
+	// РџСЂРѕРІРµСЂСЏРµРј РїРѕРєР°Р·Р°РЅРёСЏ СѓСЃРёР»РёС‚РµР»СЏ
 	uint16_t vamp = adc_read(ADC_CHANNEL_AMP);
 	if ((vamp<20) || (vamp>980)) return false;
 	uint16_t vsrc = adc_read(ADC_CHANNEL_SRC);
-	// Максимальная ошибка ОУ
+	// РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РѕС€РёР±РєР° РћРЈ
 	vamp_err = measure_get_error(dac);
 	if      (vsrc<100) vamp_err = 12;
 	else if (vsrc<150) vamp_err = 10;
 	else if (vsrc<200) vamp_err = 8;
 	else vamp_err = 6;
-	// Усредняем результат
+	// РЈСЃСЂРµРґРЅСЏРµРј СЂРµР·СѓР»СЊС‚Р°С‚
 	uint16_t n    = 127;
 	vamp_sum      = vamp;
 	vsrc_sum      = vsrc;
 	while(n--){
-		// Расчитывае
-		// Проверяем стабильность ИОН
+		// РџСЂРѕРІРµСЂСЏРµРј СЃС‚Р°Р±РёР»СЊРЅРѕСЃС‚СЊ РРћРќ
 		uint16_t vsrc2 = adc_read(ADC_CHANNEL_SRC);
 		uint16_t dsrc  = vsrc2>vsrc ? vsrc2-vsrc : vsrc-vsrc2;
 		if (dsrc>1) return false;
 		vsrc_sum += vsrc2;
-		// Считываем значение усилителя
+		// РЎС‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёРµ СѓСЃРёР»РёС‚РµР»СЏ
 		uint16_t vamp2 = adc_read(ADC_CHANNEL_AMP);
 		uint16_t damp  = vamp2>vamp ? vamp2-vamp : vamp-vamp2;
 		if (damp>vamp_err) return false;
 		vamp_sum += vamp2;
 	}
-	// Расчитываем значения
+	// Р Р°СЃС‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёСЏ
 	out->vsrc = (vsrc_sum>>7);
 	out->vamp = (vamp_sum>>7);
 	out->r    = (U32(AMP_R1)*250*out->vamp)/((U32(AMP_MULTIPLY)*out->vsrc - 100UL*out->vamp)>>2);
-	// Все нормально
+	// Р’СЃРµ РЅРѕСЂРјР°Р»СЊРЅРѕ
 	return true;
 }
